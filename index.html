@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Store Revenue Report | Abrio GmbH</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:    #0f1117;
+      --header:  #161b26;
+      --card:    #ffffff;
+      --border:  #e5e7eb;
+      --accent:  #5c6bc0;
+      --accent2: #26a69a;
+      --accent3: #ef5350;
+      --accent4: #ffa726;
+      --text:    #1a202c;
+      --muted:   #6b7280;
+      --green:   #22c55e;
+      --blue:    #3b82f6;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f3f4f6;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--header);
+      color: #fff;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.4);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .logo-badge {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .header-meta {
+      text-align: right;
+      font-size: .8rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .header-meta strong { color: #e2e8f0; }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1280px;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    h2.section-title {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    /* ── KPI CARDS ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.4rem 1.5rem 1.3rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--kpi-color, var(--accent));
+    }
+
+    .kpi-label {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .5rem;
+    }
+
+    .kpi-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: .4rem;
+    }
+
+    .kpi-sub {
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    .kpi-icon {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      font-size: 1.6rem;
+      opacity: .15;
+    }
+
+    /* ── CHART GRID ── */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .chart-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      padding: 1.5rem;
+    }
+
+    .chart-title {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 260px;
+    }
+
+    .chart-wrap.donut {
+      height: 300px;
+    }
+
+    /* ── TABLE ── */
+    .table-card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .table-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .875rem;
+    }
+
+    thead th {
+      background: #f9fafb;
+      padding: .85rem 1.25rem;
+      text-align: left;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f9fafb; }
+
+    tbody td {
+      padding: .95rem 1.25rem;
+      vertical-align: middle;
+    }
+
+    .store-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .store-domain {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .badge-active   { background: #dcfce7; color: #166534; }
+    .badge-inactive { background: #f3f4f6; color: #6b7280; }
+
+    .share-bar {
+      height: 6px;
+      border-radius: 99px;
+      background: #e5e7eb;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .share-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--fill-color, var(--accent));
+    }
+
+    .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+    td.right { text-align: right; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--header);
+      color: #64748b;
+      text-align: center;
+      padding: 1.25rem 1rem;
+      font-size: .78rem;
+      line-height: 1.8;
+    }
+
+    footer strong { color: #94a3b8; }
+
+    /* ── TOTAL ROW ── */
+    .total-row td {
+      font-weight: 700;
+      background: #f9fafb;
+      color: var(--text);
+      border-top: 2px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-badge">Abrio</span>
+    Multi-Store Revenue Report
+  </div>
+  <div class="header-meta">
+    <strong>Zeitraum:</strong> 22. März 2026 – 21. April 2026<br>
+    <strong>Stores:</strong> 4 abgefragt &nbsp;|&nbsp; <strong>Aktiv:</strong> 2
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI CARDS -->
+  <h2 class="section-title">Übersicht</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:#5c6bc0">
+      <div class="kpi-label">Gesamtumsatz</div>
+      <div class="kpi-value num">€ 2.050,37</div>
+      <div class="kpi-sub">alle Stores, letzte 30 Tage</div>
+      <span class="kpi-icon">💶</span>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#26a69a">
+      <div class="kpi-label">Bestellungen gesamt</div>
+      <div class="kpi-value num">14</div>
+      <div class="kpi-sub">über alle aktiven Stores</div>
+      <span class="kpi-icon">🛒</span>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#ffa726">
+      <div class="kpi-label">Ø Bestellwert (AOV)</div>
+      <div class="kpi-value num">€ 146,46</div>
+      <div class="kpi-sub">Gesamtumsatz / Gesamtbestellungen</div>
+      <span class="kpi-icon">📊</span>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#22c55e">
+      <div class="kpi-label">Aktive Stores</div>
+      <div class="kpi-value num">2 / 4</div>
+      <div class="kpi-sub">mit Bestellungen im Zeitraum</div>
+      <span class="kpi-icon">🏪</span>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <h2 class="section-title">Visualisierung</h2>
+  <div class="chart-grid">
+
+    <div class="chart-card">
+      <div class="chart-title">Umsatz je Store (€)</div>
+      <div class="chart-wrap">
+        <canvas id="chartRevenue"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Umsatzanteile (%)</div>
+      <div class="chart-wrap donut">
+        <canvas id="chartDonut"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Bestellungen je Store</div>
+      <div class="chart-wrap">
+        <canvas id="chartOrders"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Ø Bestellwert je Store (€)</div>
+      <div class="chart-wrap">
+        <canvas id="chartAov"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DETAIL TABLE -->
+  <h2 class="section-title">Detailansicht</h2>
+  <div class="table-card">
+    <div class="table-header">
+      <h2 class="section-title" style="margin:0">Store-Kennzahlen — 22. Mrz. bis 21. Apr. 2026</h2>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Store</th>
+          <th>Status</th>
+          <th class="right">Umsatz (€)</th>
+          <th class="right">Bestellungen</th>
+          <th class="right">AOV (€)</th>
+          <th>Umsatzanteil</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="store-name">Development Plus Store</div>
+            <div class="store-domain">development-plus-store.myshopify.com</div>
+          </td>
+          <td><span class="badge badge-active">Aktiv</span></td>
+          <td class="right num">1.604,67</td>
+          <td class="right num">7</td>
+          <td class="right num">229,24</td>
+          <td>
+            <span class="num" style="font-size:.82rem;font-weight:600;color:#5c6bc0">78,26 %</span>
+            <div class="share-bar"><div class="share-fill" style="width:78.26%;--fill-color:#5c6bc0"></div></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="store-name">No Cosmetics Dev</div>
+            <div class="store-domain">no-cosmetics-dev.myshopify.com</div>
+          </td>
+          <td><span class="badge badge-inactive">Inaktiv</span></td>
+          <td class="right num">0,00</td>
+          <td class="right num">0</td>
+          <td class="right num">—</td>
+          <td>
+            <span class="num" style="font-size:.82rem;font-weight:600;color:#9ca3af">0,00 %</span>
+            <div class="share-bar"><div class="share-fill" style="width:0%;--fill-color:#9ca3af"></div></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="store-name">Barfgold Dev</div>
+            <div class="store-domain">barfgold-dev.myshopify.com</div>
+          </td>
+          <td><span class="badge badge-active">Aktiv</span></td>
+          <td class="right num">445,70</td>
+          <td class="right num">7</td>
+          <td class="right num">63,67</td>
+          <td>
+            <span class="num" style="font-size:.82rem;font-weight:600;color:#26a69a">21,74 %</span>
+            <div class="share-bar"><div class="share-fill" style="width:21.74%;--fill-color:#26a69a"></div></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="store-name">Hofmanns Dev</div>
+            <div class="store-domain">hofmanns-dev.myshopify.com</div>
+          </td>
+          <td><span class="badge badge-inactive">Inaktiv</span></td>
+          <td class="right num">0,00</td>
+          <td class="right num">0</td>
+          <td class="right num">—</td>
+          <td>
+            <span class="num" style="font-size:.82rem;font-weight:600;color:#9ca3af">0,00 %</span>
+            <div class="share-bar"><div class="share-fill" style="width:0%;--fill-color:#9ca3af"></div></div>
+          </td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="2"><strong>Gesamt</strong></td>
+          <td class="right num">2.050,37</td>
+          <td class="right num">14</td>
+          <td class="right num">146,46</td>
+          <td><span class="num" style="font-size:.82rem;font-weight:700">100,00 %</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Abrio GmbH</strong> · Multi-Store Revenue Report<br>
+  Generiert am <strong>21. April 2026</strong> · Daten via Shopify Admin GraphQL API ·
+  Zeitraum: 22. März – 21. April 2026
+</footer>
+
+<script>
+  const stores  = ['Dev Plus', 'No Cosmetics', 'Barfgold', 'Hofmanns'];
+  const colors  = ['#5c6bc0', '#9ca3af', '#26a69a', '#ffa726'];
+  const revenue = [1604.67, 0, 445.70, 0];
+  const orders  = [7, 0, 7, 0];
+  const aov     = [229.24, 0, 63.67, 0];
+  const shares  = [78.26, 0, 21.74, 0];
+
+  const baseOpts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#6b7280', font: { size: 11 } } },
+      y: { grid: { color: '#f0f0f0' }, ticks: { color: '#6b7280', font: { size: 11 } } }
+    }
+  };
+
+  new Chart(document.getElementById('chartRevenue'), {
+    type: 'bar',
+    data: {
+      labels: stores,
+      datasets: [{ data: revenue, backgroundColor: colors, borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      ...baseOpts,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` € ${ctx.parsed.y.toLocaleString('de-DE', {minimumFractionDigits:2})}` } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('chartDonut'), {
+    type: 'doughnut',
+    data: {
+      labels: stores,
+      datasets: [{ data: shares, backgroundColor: colors, borderWidth: 2, borderColor: '#fff', hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { display: true, position: 'bottom', labels: { color: '#6b7280', font: { size: 11 }, padding: 16, usePointStyle: true } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString('de-DE', {minimumFractionDigits:2})} %` } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('chartOrders'), {
+    type: 'bar',
+    data: {
+      labels: stores,
+      datasets: [{ data: orders, backgroundColor: colors, borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      ...baseOpts,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} Bestellungen` } }
+      },
+      scales: { ...baseOpts.scales, y: { ...baseOpts.scales.y, ticks: { stepSize: 1, color: '#6b7280', font: { size: 11 } } } }
+    }
+  });
+
+  new Chart(document.getElementById('chartAov'), {
+    type: 'bar',
+    data: {
+      labels: stores,
+      datasets: [{ data: aov, backgroundColor: colors, borderRadius: 6, borderSkipped: false }]
+    },
+    options: {
+      ...baseOpts,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` € ${ctx.parsed.y.toLocaleString('de-DE', {minimumFractionDigits:2})}` } }
+      }
+    }
+  });
+</script>
+</body>
+</html>
