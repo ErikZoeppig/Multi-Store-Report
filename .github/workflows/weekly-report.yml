@@ -1,0 +1,31 @@
+name: Weekly Shopify Revenue Report
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Jeden Montag 08:00 Uhr (CEST = UTC+2)
+  workflow_dispatch:        # Manueller Start über GitHub UI
+
+permissions:
+  contents: write           # Damit der Workflow committen und pushen darf
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Report generieren
+        env:
+          SHOPIFY_CLIENT_ID:     ${{ secrets.SHOPIFY_CLIENT_ID }}
+          SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
+        run: pwsh ./generate-report.ps1
+
+      - name: Commit & Push
+        run: |
+          git config user.name  "Abrio Revenue Bot"
+          git config user.email "bot@abrio.de"
+          git add Reviews/ index.html
+          git diff --staged --quiet && echo "Keine Änderungen." || \
+            git commit -m "report: weekly revenue report (automated)" && git push
