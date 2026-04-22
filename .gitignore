@@ -1,0 +1,15 @@
+# Shopify CLI — Credentials & App Config (nie ins Repo!)
+shopify.app.toml
+.shopify/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Node
+node_modules/
