@@ -1,6 +1,8 @@
 # Shopify CLI — Credentials & App Config (nie ins Repo!)
 shopify.app.toml
 .shopify/
+stores-config.json
+fetch-tokens.ps1
 
 # OS
 .DS_Store

@@ -1,0 +1,1062 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Store Revenue Report KW16 2026 | Abrio GmbH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ═══════════════════════════════════════════════
+       ABRIO CI — Design Tokens
+       Extracted from abrio.de (Webflow, April 2026)
+    ═══════════════════════════════════════════════ */
+    :root {
+      /* Core Brand */
+      --abrio-navy:        #020641;   /* primary dark bg, headlines */
+      --abrio-purple:      #5F2283;   /* brand primary */
+      --abrio-cyan:        #16F4C9;   /* brand accent / highlight */
+
+      /* Purple Scale */
+      --abrio-purple-dark: #42135E;
+      --abrio-purple-mid:  #8030AD;
+      --abrio-purple-lite: #A840E4;
+
+      /* Cyan/Teal Scale */
+      --abrio-teal:        #1ACBA9;
+      --abrio-teal-mid:    #0DBF9D;
+      --abrio-teal-dark:   #00AAA8;
+
+      /* Gradients */
+      --abrio-grad:        linear-gradient(135deg, var(--abrio-purple) 0%, var(--abrio-cyan) 100%);
+      --abrio-grad-h:      linear-gradient(90deg,  var(--abrio-purple) 0%, var(--abrio-cyan) 100%);
+      --abrio-grad-rev:    linear-gradient(135deg, var(--abrio-cyan) 0%, var(--abrio-purple) 100%);
+
+      /* Surfaces (Dark Theme) */
+      --bg-page:           #020a2e;
+      --bg-card:           #0c1448;
+      --bg-card-hover:     #111d5e;
+      --bg-card-inset:     #060d38;
+      --border:            rgba(95, 34, 131, 0.35);
+      --border-cyan:       rgba(22, 244, 201, 0.25);
+      --border-subtle:     rgba(255, 255, 255, 0.07);
+
+      /* Text */
+      --text-primary:      #ffffff;
+      --text-secondary:    rgba(255, 255, 255, 0.65);
+      --text-muted:        rgba(255, 255, 255, 0.38);
+      --text-navy:         var(--abrio-navy);
+
+      /* Status */
+      --status-active:     var(--abrio-cyan);
+      --status-inactive:   rgba(255, 255, 255, 0.25);
+      --status-warn:       #ffa726;
+      --status-error:      #ef5350;
+
+      /* Spacing & Shape */
+      --radius-sm:  6px;
+      --radius-md:  10px;
+      --radius-lg:  16px;
+      --radius-xl:  24px;
+
+      /* Typography */
+      --font:       'DM Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-page);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ═══════════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════════ */
+    .abrio-header {
+      background: var(--abrio-navy);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+
+    /* Gradient accent bar at very top */
+    .abrio-header::before {
+      content: '';
+      display: block;
+      height: 3px;
+      background: var(--abrio-grad-h);
+    }
+
+    .header-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .header-logo {
+      height: 28px;
+      width: auto;
+      display: block;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border-subtle);
+    }
+
+    .header-report-title {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: .01em;
+      white-space: nowrap;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(22, 244, 201, .1);
+      border: 1px solid rgba(22, 244, 201, .25);
+      color: var(--abrio-cyan);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .header-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--abrio-cyan);
+      box-shadow: 0 0 6px var(--abrio-cyan);
+    }
+
+    .header-meta {
+      text-align: right;
+      font-size: .75rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .header-meta strong { color: var(--text-secondary); }
+
+    /* ═══════════════════════════════════════════════
+       PAGE HERO (Report Title Band)
+    ═══════════════════════════════════════════════ */
+    .report-hero {
+      background: var(--abrio-navy);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 2.5rem 2rem 2rem;
+    }
+
+    .report-hero-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .report-eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--abrio-cyan);
+      margin-bottom: .5rem;
+    }
+
+    .report-h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--text-primary);
+      line-height: 1.15;
+    }
+
+    .report-h1 span {
+      background: var(--abrio-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .report-subtitle {
+      margin-top: .5rem;
+      font-size: .9rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* ═══════════════════════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════════════════════ */
+    main {
+      max-width: 1320px;
+      margin: 2rem auto;
+      padding: 0 2rem 4rem;
+    }
+
+    /* ─── Section Label ─── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 14px; height: 2px;
+      background: var(--abrio-grad-h);
+      border-radius: 1px;
+    }
+
+    /* ─── Section Spacing ─── */
+    .section { margin-bottom: 2.5rem; }
+
+    /* ═══════════════════════════════════════════════
+       KPI CARDS
+    ═══════════════════════════════════════════════ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1px;
+      background: var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      padding: 1.5rem 1.75rem 1.4rem;
+      position: relative;
+      overflow: hidden;
+      transition: background .2s;
+    }
+
+    .kpi-card:hover { background: var(--bg-card-hover); }
+
+    /* Gradient glow orb */
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: var(--kpi-glow, rgba(95, 34, 131, 0.15));
+      pointer-events: none;
+    }
+
+    .kpi-label {
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .6rem;
+    }
+
+    .kpi-value {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1;
+      margin-bottom: .45rem;
+      /* Default: white. Override with .kpi-card--accent */
+      color: var(--text-primary);
+    }
+
+    .kpi-card--accent .kpi-value {
+      background: var(--abrio-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .kpi-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--abrio-teal);
+    }
+
+    .kpi-delta--down { color: var(--status-error); }
+
+    .kpi-sub {
+      font-size: .75rem;
+      color: var(--text-muted);
+      margin-top: .25rem;
+    }
+
+    /* Left accent bar on first card */
+    .kpi-card:first-child::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--abrio-grad);
+    }
+
+    /* ═══════════════════════════════════════════════
+       CHART CARDS
+    ═══════════════════════════════════════════════ */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .chart-grid--3 { grid-template-columns: repeat(3, 1fr); }
+    .chart-grid--full > * { grid-column: 1 / -1; }
+
+    @media (max-width: 960px) {
+      .chart-grid,
+      .chart-grid--3 { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle gradient line at top of each chart card */
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 1.5rem; right: 1.5rem;
+      height: 1px;
+      background: var(--abrio-grad-h);
+      opacity: .35;
+    }
+
+    .chart-card--featured {
+      border-color: var(--border-cyan);
+    }
+
+    .chart-card--featured::before { opacity: .8; }
+
+    .chart-title {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .chart-title strong {
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+    }
+
+    .chart-wrap--tall { height: 300px; }
+    .chart-wrap--short { height: 180px; }
+
+    /* ═══════════════════════════════════════════════
+       DATA TABLE
+    ═══════════════════════════════════════════════ */
+    .table-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+
+    .table-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .table-card-title {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .table-tag {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: rgba(95, 34, 131, .25);
+      color: var(--abrio-purple-lite);
+      border: 1px solid rgba(95, 34, 131, .4);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: .75rem 1.25rem;
+      text-align: left;
+      font-size: .63rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-card-inset);
+      border-bottom: 1px solid var(--border-subtle);
+      white-space: nowrap;
+    }
+
+    thead th.right { text-align: right; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background .15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: rgba(255,255,255,.025); }
+
+    tbody td {
+      padding: 1rem 1.25rem;
+      font-size: .875rem;
+      vertical-align: middle;
+    }
+
+    tbody td.right { text-align: right; }
+
+    .td-store-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .td-store-domain {
+      font-size: .7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Status badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: 3px 10px 3px 8px;
+      border-radius: 99px;
+      font-size: .67rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+    }
+
+    .badge-active {
+      background: rgba(22, 244, 201, .1);
+      color: var(--abrio-cyan);
+      border: 1px solid rgba(22, 244, 201, .25);
+    }
+
+    .badge-active::before { background: var(--abrio-cyan); box-shadow: 0 0 4px var(--abrio-cyan); }
+
+    .badge-inactive {
+      background: rgba(255, 255, 255, .05);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .badge-inactive::before { background: var(--text-muted); }
+
+    /* Share bar */
+    .share-bar {
+      height: 4px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.08);
+      margin-top: 6px;
+      overflow: hidden;
+      min-width: 80px;
+    }
+
+    .share-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--abrio-grad-h);
+    }
+
+    .share-pct {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--abrio-cyan);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Total / summary row */
+    .row-total td {
+      background: rgba(95, 34, 131, .12);
+      border-top: 1px solid rgba(95, 34, 131, .3);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Numbers */
+    .num {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+    }
+
+    .val-highlight {
+      color: var(--abrio-cyan);
+      font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════════
+       DIVIDER
+    ═══════════════════════════════════════════════ */
+    .abrio-divider {
+      height: 1px;
+      background: var(--abrio-grad-h);
+      opacity: .25;
+      border: none;
+      margin: 2.5rem 0;
+    }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════ */
+    .abrio-footer {
+      background: var(--abrio-navy);
+      border-top: 1px solid var(--border-subtle);
+      padding: 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      height: 20px;
+      width: auto;
+      opacity: .7;
+    }
+
+    .footer-meta {
+      font-size: .73rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .footer-meta strong { color: var(--text-secondary); }
+
+    .footer-right {
+      font-size: .7rem;
+      color: var(--text-muted);
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    /* ═══════════════════════════════════════════════
+       UTILITY
+    ═══════════════════════════════════════════════ */
+    .text-cyan    { color: var(--abrio-cyan); }
+    .text-purple  { color: var(--abrio-purple-lite); }
+    .text-muted   { color: var(--text-muted); }
+    .text-grad {
+      background: var(--abrio-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gradient-border {
+      border-image: var(--abrio-grad-h) 1;
+    }
+
+    /* Scrollbar (WebKit) */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--abrio-purple); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--abrio-purple-mid); }
+
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════════ -->
+  <header class="abrio-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img
+          class="header-logo"
+          src="https://cdn.prod.website-files.com/66029bfc5d5316e760a2499b/66029bfc5d5316e760a249c2_abrio-logo-rgb-inverted.svg"
+          alt="Abrio GmbH"
+        />
+        <div class="header-divider"></div>
+        <span class="header-report-title">Multi-Store Revenue Report KW16 2026</span>
+      </div>
+      <div class="header-right">
+        <span class="header-badge">Live Data</span>
+        <div class="header-meta">
+          <strong>13. April 2026 – 19. April 2026</strong><br>
+          4 Stores abgefragt · 2 Aktiv
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════ -->
+  <section class="report-hero">
+    <div class="report-hero-inner">
+      <div class="report-eyebrow">E-Commerce Analytics · Shopify Admin API · KW16 2026</div>
+      <h1 class="report-h1">Multi-Store <span>Revenue Report KW16</span></h1>
+      <p class="report-subtitle">Umsatz, Bestellungen &amp; Kennzahlen 13. April 2026 – 19. April 2026</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN
+  ═══════════════════════════════════════════════ -->
+  <main>
+
+    <!-- KPI Section -->
+    <section class="section">
+      <div class="section-label">Kennzahlen</div>
+      <div class="kpi-grid">
+
+        <!-- KPI 1 — Primary (accent gradient value) -->
+        <div class="kpi-card kpi-card--accent" style="--kpi-glow: rgba(22, 244, 201, 0.12)">
+          <div class="kpi-label">Gesamtumsatz</div>
+          <div class="kpi-value num">€ 74,66</div>
+          <div class="kpi-sub">alle Stores · KW16 2026</div>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="kpi-card" style="--kpi-glow: rgba(95, 34, 131, 0.2)">
+          <div class="kpi-label">Bestellungen gesamt</div>
+          <div class="kpi-value num">3</div>
+          <div class="kpi-sub">über alle aktiven Stores</div>
+        </div>
+
+        <!-- KPI 3 -->
+        <div class="kpi-card" style="--kpi-glow: rgba(95, 34, 131, 0.15)">
+          <div class="kpi-label">Ø Bestellwert (AOV)</div>
+          <div class="kpi-value num">€ 24,89</div>
+          <div class="kpi-sub">Gesamtumsatz / Gesamtbestellungen</div>
+        </div>
+
+        <!-- KPI 4 -->
+        <div class="kpi-card" style="--kpi-glow: rgba(26, 203, 169, 0.1)">
+          <div class="kpi-label">Aktive Stores</div>
+          <div class="kpi-value num">2 / 4</div>
+          <div class="kpi-sub">mit Bestellungen im Zeitraum</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="section">
+      <div class="section-label">Visualisierung</div>
+      <div class="chart-grid">
+
+        <!-- Chart 1: Primary bar -->
+        <div class="chart-card chart-card--featured">
+          <div class="chart-title"><strong>Umsatz je Store</strong></div>
+          <div class="chart-wrap">
+            <canvas id="chart1"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Donut -->
+        <div class="chart-card">
+          <div class="chart-title"><strong>Umsatzanteile (%)</strong></div>
+          <div class="chart-wrap chart-wrap--tall">
+            <canvas id="chart2"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: Secondary bar -->
+        <div class="chart-card">
+          <div class="chart-title"><strong>Bestellungen je Store</strong></div>
+          <div class="chart-wrap">
+            <canvas id="chart3"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 4: Tertiary bar -->
+        <div class="chart-card">
+          <div class="chart-title"><strong>Ø Bestellwert (AOV) je Store</strong></div>
+          <div class="chart-wrap">
+            <canvas id="chart4"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Detail Table Section -->
+    <section class="section">
+      <div class="section-label">Detailansicht</div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <span class="table-card-title">Store-Kennzahlen — 13. April 2026 bis 19. April 2026</span>
+          <span class="table-tag">Shopify Admin API</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Store</th>
+              <th>Status</th>
+              <th class="right">Umsatz (€)</th>
+              <th class="right">Bestellungen</th>
+              <th class="right">AOV (€)</th>
+              <th>Umsatzanteil</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Row template:
+            <tr>
+              <td>
+                <div class="td-store-name">Store Name</div>
+                <div class="td-store-domain">store.myshopify.com</div>
+              </td>
+              <td><span class="badge badge-active">Aktiv</span></td>
+              <td class="right num val-highlight">€ 0,00</td>
+              <td class="right num">0</td>
+              <td class="right num">0,00</td>
+              <td>
+                <span class="share-pct">0,00 %</span>
+                <div class="share-bar">
+                  <div class="share-fill" style="width:0%"></div>
+                </div>
+              </td>
+            </tr>
+            -->
+            <tr>
+              <td>
+                <div class="td-store-name">Dev Plus</div>
+                <div class="td-store-domain">development-plus-store.myshopify.com</div>
+              </td>
+              <td><span class="badge badge-active">Aktiv</span></td>
+              <td class="right num val-highlight">31,16</td>
+              <td class="right num">2</td>
+              <td class="right num">15,58</td>
+              <td>
+                <span class="share-pct">41,74 %</span>
+                <div class="share-bar"><div class="share-fill" style="width:41.74%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="td-store-name">No Cosmetics</div>
+                <div class="td-store-domain">no-cosmetics-dev.myshopify.com</div>
+              </td>
+              <td><span class="badge badge-inactive">Inaktiv</span></td>
+              <td class="right num" style="color:var(--text-muted)">0,00</td>
+              <td class="right num" style="color:var(--text-muted)">0</td>
+              <td class="right num" style="color:var(--text-muted)">—</td>
+              <td>
+                <span class="share-pct" style="color:var(--text-muted)">0,00 %</span>
+                <div class="share-bar"><div class="share-fill" style="width:0%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="td-store-name">Barfgold</div>
+                <div class="td-store-domain">barfgold-dev.myshopify.com</div>
+              </td>
+              <td><span class="badge badge-active">Aktiv</span></td>
+              <td class="right num val-highlight">43,50</td>
+              <td class="right num">1</td>
+              <td class="right num">43,50</td>
+              <td>
+                <span class="share-pct">58,26 %</span>
+                <div class="share-bar"><div class="share-fill" style="width:58.26%"></div></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="td-store-name">Hofmanns</div>
+                <div class="td-store-domain">hofmanns-dev.myshopify.com</div>
+              </td>
+              <td><span class="badge badge-inactive">Inaktiv</span></td>
+              <td class="right num" style="color:var(--text-muted)">0,00</td>
+              <td class="right num" style="color:var(--text-muted)">0</td>
+              <td class="right num" style="color:var(--text-muted)">—</td>
+              <td>
+                <span class="share-pct" style="color:var(--text-muted)">0,00 %</span>
+                <div class="share-bar"><div class="share-fill" style="width:0%"></div></div>
+              </td>
+            </tr>
+            <tr class="row-total">
+              <td><div class="td-store-name">Gesamt</div></td>
+              <td><span class="badge badge-active">2 / 4 Aktiv</span></td>
+              <td class="right num val-highlight">74,66</td>
+              <td class="right num">3</td>
+              <td class="right num">24,89</td>
+              <td><span class="share-pct">100,00 %</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════ -->
+  <footer class="abrio-footer">
+    <div class="footer-inner">
+      <img
+        class="footer-logo"
+        src="https://cdn.prod.website-files.com/66029bfc5d5316e760a2499b/66029bfc5d5316e760a249c2_abrio-logo-rgb-inverted.svg"
+        alt="Abrio GmbH"
+      />
+      <div class="footer-meta">
+        Generiert am <strong>22. April 2026</strong> ·
+        Daten via <strong>Shopify Admin GraphQL API</strong><br>
+        Zeitraum: <strong>13. April 2026 – 19. April 2026</strong>
+      </div>
+      <div class="footer-right">
+        <strong>Abrio GmbH</strong><br>
+        Taunusanlage 8 · 60329 Frankfurt
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════
+       CHART.JS CONFIG — Abrio Dark Theme
+  ═══════════════════════════════════════════════ -->
+  <script>
+    /* ── Abrio Brand Colors ── */
+    const CI = {
+      navy:       '#020641',
+      purple:     '#5F2283',
+      cyan:       '#16F4C9',
+      purpleMid:  '#8030AD',
+      purpleLite: '#A840E4',
+      purpleDark: '#42135E',
+      teal:       '#1ACBA9',
+      tealMid:    '#0DBF9D',
+      white:      '#FFFFFF',
+      textMuted:  'rgba(255,255,255,0.38)',
+      gridLine:   'rgba(255,255,255,0.06)',
+      cardBg:     '#0c1448',
+    };
+
+    /* Gradient helper (for canvas) */
+    function makeGrad(ctx, color1, color2, vertical = false) {
+      const g = vertical
+        ? ctx.createLinearGradient(0, 0, 0, ctx.canvas.height)
+        : ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+      g.addColorStop(0, color1);
+      g.addColorStop(1, color2);
+      return g;
+    }
+
+    /* ── Global Chart.js Defaults (Dark Abrio Theme) ── */
+    Chart.defaults.color           = CI.textMuted;
+    Chart.defaults.font.family     = "'DM Sans', system-ui, sans-serif";
+    Chart.defaults.font.size       = 11;
+    Chart.defaults.borderColor     = CI.gridLine;
+    Chart.defaults.plugins.legend.labels.color = 'rgba(255,255,255,0.55)';
+
+    const baseScales = {
+      x: {
+        grid:  { display: false },
+        ticks: { color: CI.textMuted, font: { size: 11 } },
+        border: { color: CI.gridLine }
+      },
+      y: {
+        grid:  { color: CI.gridLine },
+        ticks: { color: CI.textMuted, font: { size: 11 } },
+        border: { color: 'transparent' }
+      }
+    };
+
+    const baseTooltip = {
+      backgroundColor: CI.navy,
+      borderColor:     CI.purple,
+      borderWidth:     1,
+      titleColor:      'rgba(255,255,255,0.8)',
+      bodyColor:       CI.cyan,
+      padding:         10,
+      cornerRadius:    8,
+    };
+
+    /* ── Palette for multi-series charts ── */
+    const palette = [
+      CI.cyan,
+      CI.purple,
+      CI.purpleLite,
+      CI.teal,
+      CI.purpleMid,
+      CI.tealMid,
+    ];
+
+    /* KW16 2026 — generiert am 22. April 2026 */
+    const LABELS   = ['Dev Plus', 'No Cosmetics', 'Barfgold', 'Hofmanns'];
+    const DATA_1 = [31.16, 0, 43.5, 0]; // Umsatz
+    const DATA_2 = [41.74, 0, 58.26, 0]; // Anteile %
+    const DATA_3 = [2, 0, 1, 0]; // Bestellungen
+    const DATA_4 = [15.58, 0, 43.5, 0]; // AOV
+
+    /* ── Chart 1: Bar with gradient fill ── */
+    (function() {
+      const ctx = document.getElementById('chart1').getContext('2d');
+      const grad = makeGrad(ctx, CI.purple, CI.cyan);
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: LABELS,
+          datasets: [{
+            data: DATA_1,
+            backgroundColor: palette,
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { ...baseTooltip } },
+          scales: baseScales
+        }
+      });
+    })();
+
+    /* ── Chart 2: Doughnut ── */
+    (function() {
+      new Chart(document.getElementById('chart2'), {
+        type: 'doughnut',
+        data: {
+          labels: LABELS,
+          datasets: [{
+            data: DATA_2,
+            backgroundColor: palette,
+            borderWidth: 2,
+            borderColor: CI.cardBg,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              display: true, position: 'bottom',
+              labels: { color: 'rgba(255,255,255,0.5)', padding: 14, usePointStyle: true, pointStyleWidth: 8 }
+            },
+            tooltip: { ...baseTooltip }
+          }
+        }
+      });
+    })();
+
+    /* ── Chart 3: Bar ── */
+    (function() {
+      new Chart(document.getElementById('chart3'), {
+        type: 'bar',
+        data: {
+          labels: LABELS,
+          datasets: [{
+            data: DATA_3,
+            backgroundColor: palette,
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { ...baseTooltip } },
+          scales: { ...baseScales, y: { ...baseScales.y, ticks: { ...baseScales.y.ticks, stepSize: 1 } } }
+        }
+      });
+    })();
+
+    /* ── Chart 4: Bar ── */
+    (function() {
+      new Chart(document.getElementById('chart4'), {
+        type: 'bar',
+        data: {
+          labels: LABELS,
+          datasets: [{
+            data: DATA_4,
+            backgroundColor: palette,
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { ...baseTooltip } },
+          scales: baseScales
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+
